@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+
+{% block title %}Real-time Disaster Risk Heatmap{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="text-center my-4">Real-time Disaster Risk Heatmap</h2>
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div id="map-container">
+                        {{ map_html|safe }}
+                    </div>
+                    <div class="text-center mt-3">
+                        <p>Last updated: <span id="last-update">{% now "Y-m-d H:i:s" %}</span></p>
+                        <button class="btn btn-primary" onclick="refreshMap()" id="refresh-btn">
+                            <i class="fas fa-sync-alt"></i> Refresh Map
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Active Alerts Panel -->
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">
+                        <i class="fas fa-exclamation-triangle"></i> Active Alerts
+                        <span class="badge bg-danger" id="alert-count"></span>
+                    </h5>
+                </div>
+                <div class="card-body" id="alerts-container">
+                    <div class="text-center">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function updateAlerts(data) {
+    const alertsContainer = document.getElementById('alerts-container');
+    const alertCount = document.getElementById('alert-count');
+    
+    if (data.active_alerts && data.active_alerts.length > 0) {
+        alertCount.textContent = data.active_alerts.length;
+        let alertsHtml = '<div class="list-group">';
+        data.active_alerts.forEach(alert => {
+            alertsHtml += `
+                <div class="list-group-item">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">${alert.primary_location_name}</h5>
+                        <small class="text-danger">Active Alert</small>
+                    </div>
+                    <p class="mb-1">${alert.last_alert_details}</p>
+                    <small>Location: ${alert.latitude.toFixed(4)}, ${alert.longitude.toFixed(4)}</small>
+                </div>
+            `;
+        });
+        alertsHtml += '</div>';
+        alertsContainer.innerHTML = alertsHtml;
+    } else {
+        alertCount.textContent = '0';
+        alertsContainer.innerHTML = '<p class="text-center text-muted">No active alerts at this time.</p>';
+    }
+}
+
+function refreshMap() {
+    // Disable refresh button
+    const refreshBtn = document.getElementById('refresh-btn');
+    refreshBtn.disabled = true;
+    refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing...';
+    
+    // Show loading indicator
+    document.getElementById('map-container').style.opacity = '0.5';
+    document.getElementById('alerts-container').innerHTML = `
+        <div class="text-center">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    `;
+    
+    // Fetch new data
+    fetch('/api/risk-data/')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            updateAlerts(data);
+            // Update last update time
+            document.getElementById('last-update').textContent = new Date().toLocaleString();
+            // Fetch new map HTML
+            return fetch(window.location.href);
+        })
+        .then(response => response.text())
+        .then(html => {
+            // Extract map HTML from the response
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const newMapHtml = doc.getElementById('map-container').innerHTML;
+            document.getElementById('map-container').innerHTML = newMapHtml;
+        })
+        .catch(error => {
+            console.error('Error refreshing map:', error);
+            alert('Error refreshing map data. Please try again.');
+        })
+        .finally(() => {
+            // Re-enable refresh button
+            refreshBtn.disabled = false;
+            refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Refresh Map';
+            document.getElementById('map-container').style.opacity = '1';
+        });
+}
+
+// Auto-refresh every 5 minutes
+let refreshInterval = setInterval(refreshMap, 300000);
+
+// Clear interval when page is hidden
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+        clearInterval(refreshInterval);
+    } else {
+        refreshInterval = setInterval(refreshMap, 300000);
+        refreshMap(); // Refresh immediately when page becomes visible
+    }
+});
+
+// Initial load of alerts
+refreshMap();
+</script>
+
+<style>
+#map-container {
+    height: 80vh;  /* Increased from 70vh */
+    width: 100%;
+    transition: opacity 0.3s ease;
+}
+.leaflet-container {
+    height: 100%;
+    width: 100%;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.card {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 1.5rem;
+}
+.list-group-item {
+    transition: background-color 0.3s ease;
+}
+.list-group-item:hover {
+    background-color: #f8f9fa;
+}
+.btn:disabled {
+    cursor: not-allowed;
+}
+@media (max-height: 800px) {
+    #map-container {
+        height: 65vh;  /* Smaller height for smaller screens */
+    }
+}
+</style>
+{% endblock %} 

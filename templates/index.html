@@ -1,0 +1,205 @@
+{% extends 'base.html' %}
+
+{% block title %}Disaster Resilience Network{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary-dark: #0A2342;
+        --secondary-red: #D64933;
+        --accent-yellow: #F5D547;
+        --background-light: #F4F4F4;
+        --text-dark: #333;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        background-color: var(--background-light);
+        line-height: 1.6;
+        overflow-x: hidden;
+    }
+
+    .dynamic-background {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, 
+            rgba(10, 35, 66, 0.9), 
+            rgba(214, 73, 51, 0.7)
+        );
+        background-size: 400% 400%;
+        animation: gradientFlow 15s ease infinite;
+        z-index: -2;
+    }
+
+    @keyframes gradientFlow {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    .alert-system {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: var(--secondary-red);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        margin-bottom: 2rem;
+        animation: alertPulse 2s infinite alternate;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        text-align: center;
+        width: 100%;
+    }
+
+    @keyframes alertPulse {
+        from { transform: scale(1); }
+        to { transform: scale(1.02); }
+    }
+
+    .content-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+    }
+
+    .emergency-grid {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        margin-bottom: 2rem;
+    }
+
+    .emergency-card {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        width: 100%;
+        max-width: 1200px;
+    }
+
+    .emergency-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    }
+
+    .emergency-icon {
+        font-size: 4rem;
+        color: var(--secondary-red);
+        margin-bottom: 1rem;
+    }
+
+    .emergency-button {
+        display: inline-block;
+        background: var(--primary-dark);
+        color: white;
+        padding: 12px 24px;
+        text-decoration: none;
+        border-radius: 25px;
+        transition: all 0.3s ease;
+        margin-top: 1rem;
+    }
+
+    .emergency-button:hover {
+        background: var(--secondary-red);
+        transform: scale(1.05);
+    }
+
+    .map-container {
+        width: 100%;
+        max-width: 1200px;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        position: relative;
+    }
+
+    .map-loading {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 18px;
+        font-weight: bold;
+        color: var(--primary-dark);
+        background: rgba(255, 255, 255, 0.9);
+        padding: 10px 20px;
+        border-radius: 10px;
+        display: none;
+    }
+
+    .map-container iframe {
+        width: 100%;
+        height: 500px;
+        border: none;
+        border-radius: 15px;
+        transition: transform 0.3s ease;
+    }
+
+    .map-container:hover iframe {
+        transform: scale(1.02);
+    }
+
+    @media (max-width: 768px) {
+        .map-container iframe {
+            height: 400px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dynamic-background"></div>
+
+<div class="container">
+    <div class="alert-system">
+        <strong>EMERGENCY ALERT:</strong> 
+        Active Disaster Response in Progress
+    </div>
+
+    <div class="content-wrapper">
+        <div class="emergency-grid">
+            <div class="emergency-card">
+                <div class="emergency-icon">🚨</div>
+                <h3>Emergency Alerts</h3>
+                <p>Real-time disaster notifications and warnings</p>
+                <a href="{% url 'users:subscription_form' %}" class="emergency-button">Get Alerts</a>
+            </div>
+        </div>
+
+        <div class="map-container">
+            <div class="map-loading" id="map-loading">Loading Map...</div>
+            <iframe 
+                src="https://www.ncei.noaa.gov/maps/hazards/?layers=0" 
+                title="NOAA Hazards Interactive Map"
+                allowfullscreen
+                onload="hideLoading()"
+            ></iframe>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Hide Loading Animation When Map is Loaded
+    function hideLoading() {
+        document.getElementById('map-loading').style.display = 'none';
+    }
+
+    // Show loading message for the map
+    document.getElementById('map-loading').style.display = 'block';
+</script>
+{% endblock %} 

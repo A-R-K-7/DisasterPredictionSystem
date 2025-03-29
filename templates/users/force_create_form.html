@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h3>DANGER: Force Create Subscription</h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <strong>Warning:</strong> This form will delete any existing subscription for the current user before creating a new one. Use with caution!
+                    </div>
+                    
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{% if message.tags %}{{ message.tags }}{% else %}info{% endif %}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="phone_number" class="form-label">Phone Number</label>
+                            <input type="text" name="phone_number" id="phone_number" class="form-control" value="9347153193" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" name="email" id="email" class="form-control" value="test@example.com" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="primary_location_name" class="form-label">Location Name</label>
+                            <input type="text" name="primary_location_name" id="primary_location_name" class="form-control" value="Hyderabad, India" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="latitude" class="form-label">Latitude</label>
+                            <input type="text" name="latitude" id="latitude" class="form-control" value="17.3850" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="longitude" class="form-label">Longitude</label>
+                            <input type="text" name="longitude" id="longitude" class="form-control" value="78.4867" required>
+                        </div>
+                        
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" name="enable_whatsapp_alerts" id="enable_whatsapp_alerts" class="form-check-input" checked>
+                            <label for="enable_whatsapp_alerts" class="form-check-label">Enable WhatsApp Alerts</label>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="whatsapp_phone_number" class="form-label">WhatsApp Number</label>
+                            <input type="text" name="whatsapp_phone_number" id="whatsapp_phone_number" class="form-control" value="+919347153193">
+                        </div>
+                        
+                        <button type="submit" class="btn btn-danger">Force Create New Subscription</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

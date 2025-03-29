@@ -1,0 +1,4 @@
+folium==0.14.0
+numpy==1.24.3
+django>=5.0.4
+python-dotenv>=1.0.0 

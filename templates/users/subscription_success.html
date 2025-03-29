@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h3>Subscription Successful</h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-success">
+                        <h4 class="alert-heading">Thank you!</h4>
+                        <p>Your disaster alert subscription has been created successfully. You will now receive alerts about potential disasters in your area.</p>
+                    </div>
+                    
+                    <p>We'll send alerts to your phone and email when there's a potential risk of:</p>
+                    <ul>
+                        <li>Earthquakes</li>
+                        <li>Cyclones</li>
+                        <li>Other natural disasters</li>
+                    </ul>
+                    
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    
+                    <div class="mt-4">
+                        <a href="{% url 'users:subscription_form' %}" class="btn btn-primary">Return to Subscription Form</a>
+                        {% if user.is_authenticated %}
+                            <a href="/admin/" class="btn btn-secondary">Go to Admin</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

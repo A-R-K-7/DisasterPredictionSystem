@@ -1,0 +1,24 @@
+<div class="card mt-4">
+    <div class="card-header">
+        <h4>WhatsApp Alert Settings</h4>
+    </div>
+    <div class="card-body">
+        <div class="form-check mb-3">
+            {{ form.enable_whatsapp_alerts }}
+            <label class="form-check-label" for="{{ form.enable_whatsapp_alerts.id_for_label }}">
+                {{ form.enable_whatsapp_alerts.label }}
+            </label>
+            <small class="form-text text-muted">{{ form.enable_whatsapp_alerts.help_text }}</small>
+        </div>
+        
+        <div class="form-group">
+            <label for="{{ form.whatsapp_phone_number.id_for_label }}">{{ form.whatsapp_phone_number.label }}</label>
+            {{ form.whatsapp_phone_number }}
+            <small class="form-text text-muted">{{ form.whatsapp_phone_number.help_text }}</small>
+        </div>
+        
+        <div class="alert alert-info mt-3">
+            <i class="fas fa-info-circle"></i> Important: To receive WhatsApp alerts, make sure the phone number is valid and has WhatsApp installed.
+        </div>
+    </div>
+</div> 
