@@ -80,8 +80,8 @@ python test_risk_detection.py
 ## Developed by Spectaculars in MGIT National Level Hackathon
 
 ### Authors
-1. [G.R.S. Akshay Rushi](https://github.com/PhantomChillz)
-2. [K. Akshay Reddy](https://github.com/A-R-K-7)
+1. [K. Akshay Reddy](https://github.com/A-R-K-7)
+2. [G.R.S. Akshay Rushi](https://github.com/PhantomChillz)
 3. [G. Harshitha](https://github.com/Harshitha9407)
 4. [I. Sri Bala Tejesh](https://github.com/SRIBALATEJESH)
 
